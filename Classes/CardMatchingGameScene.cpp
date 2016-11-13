@@ -5,6 +5,18 @@
 
 USING_NS_CC;
 
+using namespace gamescene;
+
+CardMatchingGameScene::CardMatchingGameScene()
+{
+	_vCardList.reserve( kMaxCardNumber * 2 );
+}
+
+CardMatchingGameScene::~CardMatchingGameScene()
+{
+
+}
+
 Scene* CardMatchingGameScene::createScene()
 {
     // 'scene' is an autorelease object
@@ -34,10 +46,45 @@ bool CardMatchingGameScene::init()
 	_winSize = Director::getInstance()->getVisibleSize();
 	_originPos = Director::getInstance()->getVisibleOrigin();
     
+	setTouchListener();
+
 	onCreateExitMenu();
 	initView();
 
     return true;
+}
+
+void CardMatchingGameScene::setTouchListener()
+{
+	_listener = EventListenerTouchOneByOne::create();
+	_listener->onTouchBegan = CC_CALLBACK_2( CardMatchingGameScene::onTouchBegan, this );
+	_listener->setSwallowTouches( true ); //아래에 있는 레이어의 터치를 막음
+
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority( _listener, this );
+}
+
+bool CardMatchingGameScene::onTouchBegan( Touch *touch, Event *touchEvent )
+{
+	if ( !_bTouchEnabled || _vCardList.empty() )
+		return false;
+
+	Vec2 touchPos = touch->getLocation();
+
+	for ( auto card : _vCardList )
+	{
+		if ( !card )
+			continue;
+
+		Rect box = card->getBoundingBox();
+
+		if ( box.containsPoint( touchPos ) )
+		{
+			card->setVisibleCardNum( false );
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
@@ -48,10 +95,35 @@ void CardMatchingGameScene::initView()
 
 void CardMatchingGameScene::onCreateCards()
 {
-	auto card = CardSprite::createWithCardNumber( 1 );
-	card->setPosition( _winSize  * 0.5f );
+	std::vector<int> cardNums	= getShuffledCardNum( kMaxCardNumber );
+	Vec2 startPos				= Vec2( 350.0f, 300.0f );
 
-	this->addChild( card );
+	for ( int i = 0; i < kMaxCardNumber * 2; ++i )
+	{
+		auto card = CardSprite::createWithCardNumber( cardNums[ i ] );
+		Vec2 pos  = Vec2( ( card->getContentSize().width + kCardPadding ) * ( i % kMaxCardCol ),
+						 ( card->getContentSize().height + kCardPadding ) * ( i / kMaxCardCol ));
+
+		card->setPosition( startPos + pos );
+		card->setTag( cardNums[ i ] );
+		_vCardList.pushBack( card );
+
+		this->addChild( card );
+	}
+}
+
+std::vector<int> CardMatchingGameScene::getShuffledCardNum( int maxCardNum )
+{
+	std::vector<int> ret;
+
+	for ( int i = 0; i < maxCardNum * 2; ++i )
+	{
+		ret.push_back( i / 2 );
+	}
+
+	std::random_shuffle( ret.begin(), ret.end() );
+
+	return ret;
 }
 
 void CardMatchingGameScene::onCreateExitMenu()

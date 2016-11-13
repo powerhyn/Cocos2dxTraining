@@ -56,3 +56,9 @@ std::string CardSprite::intToString( int num )
 
 	return ret;
 }
+
+void CardSprite::setVisibleCardNum( bool visible )
+{
+	if ( _pCardNumberLabel )
+		_pCardNumberLabel->setVisible( visible );
+}

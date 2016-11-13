@@ -14,7 +14,8 @@ private:
 
 public:
 	static CardSprite * createWithCardNumber( int number );
-	
+	void setVisibleCardNum( bool visible );
+
 private :
 	void onCreateCardNumberLabel( int num );
 

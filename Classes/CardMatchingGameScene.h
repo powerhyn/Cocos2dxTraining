@@ -6,8 +6,19 @@
 #include "cocos2d.h"
 #include "CardSprite.h"
 
+namespace gamescene
+{
+	const int kMaxCardNumber	= 4;		//카드 최대 번호
+	const int kMaxCardCol		= 4;		//한줄에 들어가는 카드 숫자
+	const float kCardPadding	= 15.0f;	//카드 사이의 간격
+}
+
 class CardMatchingGameScene : public cocos2d::Layer
 {
+public :
+	CardMatchingGameScene();
+	~CardMatchingGameScene();
+
 public:
     static cocos2d::Scene* createScene();
 
@@ -25,7 +36,25 @@ private:
 	//카드 생성
 	void onCreateCards();
 
+	//섞여진 카드의 리스트를 받아옴
+	std::vector<int> getShuffledCardNum( int maxCardNum );
+
+private:
+	//나가기 버튼
 	void onCreateExitMenu();
+
+private :
+	bool onTouchBegan( Touch *touch, Event *touchEvent );
+
+	//터치 리스너 등록
+	void setTouchListener();
+
+	EventListenerTouchOneByOne * _listener;
+	bool						 _bTouchEnabled;
+
+private :
+	//카드 객체들이 담길 cocos2dVector
+	Vector<CardSprite *> _vCardList;
 
 private:
 	Size _winSize;
