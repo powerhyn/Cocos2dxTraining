@@ -53,6 +53,24 @@ private :
 	bool						 _bTouchEnabled;
 
 private :
+	void addSelectedCard( CardSprite * card );
+	void initSelectCard();
+	bool isCardAllSelected();
+	bool isSelectCardNumberEquals();
+
+	void onRemoveCorrectCard();
+	void onRemoveCardVector( CardSprite *card );
+
+	CardSprite *		 _pSelectedCard[ 2 ];
+
+private :
+	bool isGameClear();
+
+private :
+	void onOpenAnimationFinished();
+	void onClosedAnimationFinished();
+
+private :
 	//카드 객체들이 담길 cocos2dVector
 	Vector<CardSprite *> _vCardList;
 
